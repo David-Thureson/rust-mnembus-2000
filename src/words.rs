@@ -8,16 +8,17 @@ const PRONUNCIATION_FILE_NAME: &str = "CMU Pronouncing Dictionary.txt";
 
 #[derive(Debug)]
 pub struct WordList {
-    words: BTreeMap<String, Word>,
+    pub words: BTreeMap<String, Word>,
 }
 
 #[derive(Debug)]
 pub struct Word {
-    word: String,
-    rank: usize,
-    frequency: usize,
-    dispersion: f64,
-    part_of_speech: String,
+    pub word: String,
+    pub rank: usize,
+    pub frequency: usize,
+    pub dispersion: f64,
+    pub part_of_speech: String,
+    pub mnemonic: Option<String>,
 }
 
 #[derive(Debug)]
@@ -54,6 +55,7 @@ impl WordList {
                 frequency,
                 dispersion,
                 part_of_speech,
+                mnemonic: None,
             });
         }
         Self {
@@ -64,13 +66,21 @@ impl WordList {
     pub fn contains_word(&self, word: &str) -> bool {
         self.words.contains_key(&word.to_lowercase())
     }
+
+    pub fn set_mnemonic(&mut self, word: &str, mnemonic: &str) {
+        let mnemonic = Some(mnemonic.to_string());
+        let word = self.words.get_mut(&word.to_lowercase());
+        if let Some(word) = word {
+            word.mnemonic = mnemonic;
+        }
+    }
 }
 
 impl Word {
 }
 
 impl Pronunciation {
-    pub fn fill(words: Option<WordList>) -> Vec<Self> {
+    pub fn fill(mut words: Option<&mut WordList>) -> Vec<Self> {
         //bg!(&words);
         let mut v = vec![];
         let lines = util_rust::parse::read_file_as_lines(PRONUNCIATION_FILE_NAME)
@@ -98,6 +108,10 @@ impl Pronunciation {
                 match Self::phones_to_mnemonic(&phones) {
                     Ok(mnemonic) => {
                         if mnemonic.len() > 0 {
+                            words.as_mut().and_then(|words| Some(words.set_mnemonic(&word, &mnemonic)));
+                            // if let Some(ref mut w) = words {
+                            //     w.set_mnemonic(&word, &mnemonic);
+                            //}
                             v.push(Self {
                                 word,
                                 mnemonic,
