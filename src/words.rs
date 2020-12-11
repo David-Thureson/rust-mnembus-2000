@@ -63,6 +63,12 @@ impl WordList {
         }
     }
 
+    pub fn fill_with_pronunciation() -> Self {
+        let mut words = Self::fill();
+        Pronunciation::fill(Some(&mut words));
+        words
+    }
+
     pub fn contains_word(&self, word: &str) -> bool {
         self.words.contains_key(&word.to_lowercase())
     }

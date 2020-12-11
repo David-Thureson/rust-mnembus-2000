@@ -22,7 +22,7 @@ fn try_propose_mnemonics() {
     words::Pronunciation::fill(Some(&mut words));
     //mnemonic::propose_mnemonics(&words, "Test", "70718", 3, 1_000);
     //mnemonic::propose_mnemonics(&words, "Brian", "206-890-9233");
-    //mnemonic::MnemonicRun::new(&words, "Test", "70718", 3, 2_000);
+    //mnemonic::MnemonicRun::new(&words, "Test", "70718", 3, 2_000); // One word: executive
     //nemonic::MnemonicRun::new(&words, "Test", "890-9233", 4, 5_000);
     //mnemonic::MnemonicRun::new(&words, "Brian", "206-890-9233", 5, 5_000);
     mnemonic::main();
