@@ -3,15 +3,13 @@ use std::time::Instant;
 use std::collections::BTreeMap;
 use crate::words::WordList;
 use crate::itertools::Itertools;
-use util_rust::parse;
+use util_rust::{format, parse};
 
 pub fn main() {
     let words = WordList::fill_with_pronunciation();
     //bg!(gen_paths("123456",4));
     // propose_mnemonics_path(&words, "Executive", "70718", 5_000);
     // propose_mnemonics_path(&words, "Executive Plus", "3707184", 5_000);
-    // propose_mnemonics_path(&words, "Brian", "206-890-9233", 5_000);
-    propose_mnemonics_path(&words, "Mom (cell)", "206-406-9701", 5_000);
 }
 
 #[derive(Clone, Debug)]
@@ -95,8 +93,14 @@ impl MnemonicRun {
     }
 }
 
-pub fn propose_mnemonics_path(word_list: &WordList, _label: &str, match_numbers: &str, max_rank: usize) {
+pub fn propose_mnemonics_path(word_list: &WordList, label: &str, match_numbers: &str, max_rank: usize) -> String {
     let start_time_overall = Instant::now();
+
+    let display_width = 100;
+
+    let mut report = String::new();
+    report.push_str(&format::header(0, label, display_width));
+
     let match_numbers = parse::digits_only(match_numbers);
 
     // One entry per mnemonic with multiple words possible per entry.
@@ -106,7 +110,7 @@ pub fn propose_mnemonics_path(word_list: &WordList, _label: &str, match_numbers:
         let entry = words.entry(word.mnemonic.as_ref().unwrap().clone()).or_insert(vec![]);
         entry.push((word.word.clone(), word.rank));
     }
-    let elapsed_build_btree = Instant::now() - start_time_build_btree;
+    let _elapsed_build_btree = Instant::now() - start_time_build_btree;
 
     let start_time_propose = Instant::now();
 
@@ -120,10 +124,14 @@ pub fn propose_mnemonics_path(word_list: &WordList, _label: &str, match_numbers:
             // See if we have at least one matching word for each step in the path.
             if path.iter().all(|key| words.contains_key(key)) {
                 found = true;
-                println!("{}", path.iter().join("-"));
+                //rintln!("\n\n{}", path.iter().join("-"));
+                report.push_str(&format::header(1,&path.iter().join("-"), display_width));
                 for key in path.iter() {
                     let found_words = words.get(key).unwrap().iter().map(|(word, _)| word).join(" ");
-                    println!("\t{}", found_words);
+                    //rintln!("\t{}", found_words);
+                    //rintln!("\n{}", format::wrap_hanging_indent(&found_words, "", 1, 100));
+                    //report.push_str(&format!("\n{}", format::wrap_hanging_indent(&found_words, "", 1, 100)));
+                    report.push_str(&format!("\n{}", &found_words));
                 }
             }
         }
@@ -132,9 +140,11 @@ pub fn propose_mnemonics_path(word_list: &WordList, _label: &str, match_numbers:
         }
     }
 
-    let elapsed_propose = Instant::now() - start_time_propose;
-    let elapsed_overall = Instant::now() - start_time_overall;
-    dbg!(elapsed_build_btree, elapsed_propose, elapsed_overall);
+    let _elapsed_propose = Instant::now() - start_time_propose;
+    let _elapsed_overall = Instant::now() - start_time_overall;
+    //bg!(elapsed_build_btree, elapsed_propose, elapsed_overall);
+    println!("{}", report.replace("\n\n", "\n"));
+    report
 }
 
 fn gen_paths(match_numbers: &str, path_length: usize) -> Vec<Vec<String>> {
