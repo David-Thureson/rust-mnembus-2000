@@ -1,3 +1,4 @@
+#![feature(str_split_once)]
 //#[macro_use]
 extern crate itertools;
 

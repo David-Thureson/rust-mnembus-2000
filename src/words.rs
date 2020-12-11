@@ -4,7 +4,7 @@ use util_rust::log;
 use std::collections::BTreeMap;
 
 const WORD_FILE_NAME: &str = "English Words Top 5000.txt";
-const PRONUNCIATION_FILE_NAME: &str = "CMU Pronouncing Dictionary.txt";
+const PRONUNCIATION_FILE_NAME: &str = "Pronunciations.txt";
 
 #[derive(Debug)]
 pub struct WordList {
@@ -80,6 +80,7 @@ impl WordList {
             word.mnemonic = mnemonic;
         }
     }
+
 }
 
 impl Word {

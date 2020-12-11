@@ -11,3 +11,5 @@ Cargo.lock
 # Intellij IDEA
 /.idea/
 *.iml
+
+*.txt
